@@ -17,7 +17,12 @@
                 <h2 id="intro_sub" class="intro_sub">Software Engineer</h2>
                 <div class="content">
                     <p id="intro_1" class="intro-p">Hi, I'm Menno Engels, a Software Engineer who is passionate about creating
-                        practical solutions to real world problems.
+                        practical solutions to real world problems. My expertise includes developing complex systems and
+                        software applications using a range of programming languages and technologies. I have experience
+                        working with both front-end and back-end technologies and have a deep understanding of software
+                        development best practices, including agile methodologies, code review, and testing.
+                        In addition, I am dedicated to staying up to date with the latest technological advancements and
+                        continuously seek to improve my skills and knowledge.
                     </p>
                     <p id="intro_2" class="intro-p">I am currently focusing on building interesting and practical projects to further
                         develop my Python skills.</p>
