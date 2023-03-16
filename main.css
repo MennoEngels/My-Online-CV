@@ -246,3 +246,19 @@ p {
     -webkit-text-fill-color: transparent;
 }
 
+.menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+a {
+    color: #000;
+}
+
+a:visited {
+    color: #000;
+}

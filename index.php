@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
+    <div class="menu">
+        <div class="lang_switch"><a href="#" onclick="changeLanguage('nl')">NL</a><span> / </span><a href="#" onclick="changeLanguage('en')">EN</a></div>
+    </div>
     <div class="center">
         <div class="center-inner">
             <div class="introduction">
@@ -102,4 +105,39 @@
         </div>
     </div>
 </body>
+<script>
+    var language;
+
+    function changeLanguage(lang) {
+        localStorage.setItem('language', lang);
+        getLanguage(lang);
+    }
+
+    function getLanguage(language_set) {
+            var request = new XMLHttpRequest();
+            request.open('GET', '/My-Online-CV/language/' + language_set + '.json', false);
+            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            request.send();
+            if (request.readyState === 4 && request.status === 200) {
+                var lang = JSON.parse(request.responseText);
+                language = lang;
+            }
+
+            setLanguage(language_set);
+    }
+
+    function setLanguage(language_set) {
+        for (const [key, value] of Object.entries(language)) {
+            document.getElementById(key).textContent = value;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (localStorage.getItem('language') === null) {
+            getLanguage('en');
+        } else {
+            getLanguage(localStorage.getItem('language'));
+        }
+    });
+</script>
 </html>
