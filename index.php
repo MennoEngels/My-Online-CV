@@ -141,3 +141,148 @@
     });
 </script>
 </html>
+<?php
+use \CloudConvert\CloudConvert;
+use \CloudConvert\Models\Job;
+use \CloudConvert\Models\Task;
+
+require_once('vendor/autoload.php');
+include_once('simple_html_dom.php');
+
+function convertHtmlToPdf($language) {
+    include('config.php');
+    $cloudconvert = new CloudConvert(['api_key' => $api_key]);
+
+    $job = (new Job())
+    ->addTask(
+        (new Task('import/upload', 'import-1'))
+        )
+    ->addTask(
+        (new Task('convert', 'task-1'))
+            ->set('input_format', 'html')
+            ->set('output_format', 'pdf')
+            ->set('engine', 'chrome')
+            ->set('input', ["import-1"])
+            ->set('pages', '1')
+            ->set('zoom', 1)
+            ->set('margin_top', 12)
+            ->set('margin_bottom', 12)
+            ->set('margin_left', 12)
+            ->set('margin_right', 12)
+            ->set('print_background', true)
+            ->set('display_header_footer', false)
+            ->set('wait_until', 'load')
+            ->set('wait_time', 0)
+            ->set('css_media_type', 'screen')
+            ->set('filename', 'pdf_' . $language . '.pdf')
+            ->set('engine_version', '110')
+        )
+    ->addTask(
+        (new Task('export/url', 'export-1'))
+            ->set('input', ["task-1"])
+            ->set('inline', false)
+            ->set('archive_multiple_files', false)
+        ); 
+
+    $cloudconvert->jobs()->create($job);
+
+    $uploadTask = $job->getTasks()->whereName('import-1')[0];
+
+    $cloudconvert->tasks()->upload($uploadTask, fopen('./temp/temp_' . $language . '.html', 'r'), 'temp.html');
+
+    $cloudconvert->jobs()->wait($job);
+
+    foreach ($job->getExportUrls() as $file) {
+
+        $source = $cloudconvert->getHttpTransport()->download($file->url)->detach();
+        $dest = fopen($file->filename, 'w');
+        
+        stream_copy_to_stream($source, $dest);
+    }
+}
+
+// Load HTML code from a file and extract content up to closing </html> tag
+function extractHtmlContent($filename) {
+    $html = file_get_contents($filename);
+    $lines = explode("\n", $html);
+    $htmlEndLine = null;
+    foreach ($lines as $lineNumber => $line) {
+        if (strpos($line, '</html>') !== false) {
+            $htmlEndLine = $lineNumber;
+            break;
+        }
+    }
+    if ($htmlEndLine !== null) {
+        $lines = array_slice($lines, 0, $htmlEndLine + 1);
+        $html = implode("\n", $lines);
+    }
+    return $html;
+}
+
+// Update HTML elements with CSS styles
+function updateHtmlStyles($html) {
+
+    $htmlDom = str_get_html($html);
+
+    $elements = $htmlDom->find('.center');
+    foreach($elements as $element) {
+        $element->style = 'width: 100%; padding: 0px;';
+    }
+
+    foreach ($htmlDom->find('.menu') as $element) {
+        $element->outertext = '';
+    }
+
+    $body = $htmlDom->find('body', 0);
+    $body->style = 'background-color: white;';
+
+    return $htmlDom->save();
+}
+
+// Convert CSS styles to inline styles
+function convertCssToInlineStyles($html, $css) {
+    $converter = new \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles();
+
+    $htmlDom = str_get_html($html);
+
+    $options = [
+        'strip_original_style_tags' => true,
+    ];
+
+    $convertedHtml = $converter->convert($htmlDom, $css, $options);
+
+    return $convertedHtml;
+}
+
+function setLanguage($html, $language) {
+
+    $jsonString = file_get_contents('language/' . $language . '.json');
+    $htmlDom = str_get_html($html);
+
+    $decodedArray = json_decode($jsonString, true);
+
+    foreach ($decodedArray as $key => $value) {
+
+        $element = $htmlDom->find('#' . $key, 0);
+
+        if ($element) {
+            $element->innertext = $value;
+        }
+    }
+    
+    return $htmlDom->save();
+}
+
+function processFile($language) {
+    $html = extractHtmlContent('index.php');
+    $html = setLanguage($html, $language);
+    $html = updateHtmlStyles($html);
+    $css = file_get_contents('main.css');
+    $convertedHtml = convertCssToInlineStyles($html, $css);
+    $file = 'temp/temp_' . $language . '.html';
+    file_put_contents($file, $convertedHtml);
+    convertHtmlToPdf($language);
+}
+
+processFile('en');
+?>

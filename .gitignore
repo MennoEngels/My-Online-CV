@@ -1,2 +1,5 @@
 vendor
 composer.phar
+config.php
+simple_html_dom.php
+temp
