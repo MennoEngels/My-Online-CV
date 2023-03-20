@@ -12,6 +12,9 @@
 <body>
     <div class="menu">
         <div class="lang_switch"><a href="#" onclick="changeLanguage('nl')">NL</a><span> / </span><a href="#" onclick="changeLanguage('en')">EN</a></div>
+        <div class="resume-wrapper">
+            <a class="resume-btn" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Download Resume</a>
+        </div>
     </div>
     <div class="center">
         <div class="center-inner">
@@ -284,5 +287,61 @@ function processFile($language) {
     convertHtmlToPdf($language);
 }
 
-processFile('en');
+function updatePdfs() {
+    $pid = pcntl_fork(); // create a child process
+
+    if ($pid == -1) {
+        die('Error: could not fork process');
+    } else if ($pid) {
+        // parent process
+        return;
+    } else {
+        // child process
+        $folder_path = 'language';
+        $files = scandir($folder_path);
+        
+        foreach ($files as $file) {
+            $file_parts = explode('.', $file);
+            $file_extension = end($file_parts);
+            if ($file_extension === 'json') {
+                $language = reset($file_parts);
+                processFile($language);
+            }
+        }
+
+        exit(); 
+    }
+}
+
+function checkForUpdates() {
+    $jsonString = file_get_contents('lastmod.json');
+    $file_info = json_decode($jsonString, true);
+
+    $files = array();
+
+    foreach ($file_info as $key => $file) {
+        // Get the file name and date/time
+        $file_path = $file["file_path"];
+        $file_date = $file["last_modified_date"];
+        $last_modified_date = date("Y-m-d H:i:s", filemtime($file_path));
+
+        // Check if the file exists
+        if (file_exists($file_path)) {
+            if ($last_modified_date > $file_date) {
+                $file_info[$key]["last_modified_date"] = $last_modified_date;
+                // Get an array of all files in the folder
+                updatePdfs();
+                break;
+            } 
+        } else {
+            // Remove the entry from the array if the file doesn't exist
+            unset($file_info[$key]);
+        }
+    }
+
+    $json = json_encode($file_info, JSON_PRETTY_PRINT);
+    file_put_contents('lastmod.json', $json);
+}
+
+//checkForUpdates();
 ?>
