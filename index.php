@@ -1,12 +1,38 @@
 <html>
 <head>
-    <title>Resume | Menno Engels</title>
     <meta charset="UTF-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Software Engineer">
+    <meta name="keywords" content="Python, Software Engineer, Netherlands, Web">
+    <meta name="theme-color" content="#edf2f4">
 
-    <title>Menno Engels | Software Engineer</title>
+    <title>Resume | Menno Engels</title>
 
+    <link rel="shortcut icon" href="img/favicon.ico" hreflang="en-nl">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ef233c">
+
+    <meta property="og:title" content="Resume | Menno Engels" />
+    <meta property="og:description" content="" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://www.mennoengels.com/resume" />
+    <meta property="og:site_name" content="Resume | Menno Engels" />
+    <meta property="og:image" content="http://mennoengels.com/img/og.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="672" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:locale" content="en_NL">
+
+    <meta itemprop="name" content="Resume | Menno Engels">
+    <meta itemprop="description" content="Software Engineer">
+    <meta itemprop="image" content="http://mennoengels.com/img/og.png">
+
+    <link href="https://fonts.googleapis.com/css?family=Catamaran:200,300,400,500,600,700" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
@@ -343,5 +369,5 @@ function checkForUpdates() {
     file_put_contents('lastmod.json', $json);
 }
 
-//checkForUpdates();
+checkForUpdates();
 ?>
