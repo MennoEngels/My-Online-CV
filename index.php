@@ -14,7 +14,6 @@
     <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ef233c">
 
     <meta property="og:title" content="Resume | Menno Engels" />
@@ -22,7 +21,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="http://www.mennoengels.com/resume" />
     <meta property="og:site_name" content="Resume | Menno Engels" />
-    <meta property="og:image" content="http://mennoengels.com/img/og.png" />
+    <meta property="og:image" content="http://mennoengels.com/resume/img/og.png" />
     <meta property="og:image:width" content="1280" />
     <meta property="og:image:height" content="672" />
     <meta property="og:image:type" content="image/png" />
@@ -30,7 +29,7 @@
 
     <meta itemprop="name" content="Resume | Menno Engels">
     <meta itemprop="description" content="Software Engineer">
-    <meta itemprop="image" content="http://mennoengels.com/img/og.png">
+    <meta itemprop="image" content="http://mennoengels.com/resume/img/og.png">
 
     <link href="https://fonts.googleapis.com/css?family=Catamaran:200,300,400,500,600,700" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
@@ -39,7 +38,7 @@
     <div class="menu">
         <div class="lang_switch"><a href="#" onclick="changeLanguage('nl')">NL</a><span> / </span><a href="#" onclick="changeLanguage('en')">EN</a></div>
         <div class="resume-wrapper">
-            <a class="resume-btn" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Download Resume</a>
+            <a id="resume-link" class="resume-btn" href="/resume/resume_Menno_Engels_en.pdf" target="_blank" rel="noopener noreferrer">Download Resume</a>
         </div>
     </div>
     <div class="center">
@@ -100,7 +99,6 @@
                 <div>Menno Engels</div>
                 <div>Menno.engels@live.nl</div>
                 <div>MennoEngels.com</div>
-                <div>+31652379121</div>
             </div>
             <div class="education">
                 <h4 id="education_title">Education</h4>
@@ -144,7 +142,7 @@
 
     function getLanguage(language_set) {
             var request = new XMLHttpRequest();
-            request.open('GET', '/My-Online-CV/language/' + language_set + '.json', false);
+            request.open('GET', 'language/' + language_set + '.json', false);
             request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             request.send();
             if (request.readyState === 4 && request.status === 200) {
@@ -156,6 +154,8 @@
     }
 
     function setLanguage(language_set) {
+        document.getElementById('resume-link').setAttribute("href", "/resume/resume_Menno_Engels_" + language_set + ".pdf");
+
         for (const [key, value] of Object.entries(language)) {
             document.getElementById(key).textContent = value;
         }
@@ -203,7 +203,7 @@ function convertHtmlToPdf($language) {
             ->set('wait_until', 'load')
             ->set('wait_time', 0)
             ->set('css_media_type', 'screen')
-            ->set('filename', 'pdf_' . $language . '.pdf')
+            ->set('filename', 'resume_Menno_Engels_' . $language . '.pdf')
             ->set('engine_version', '110')
         )
     ->addTask(
@@ -217,7 +217,7 @@ function convertHtmlToPdf($language) {
 
     $uploadTask = $job->getTasks()->whereName('import-1')[0];
 
-    $cloudconvert->tasks()->upload($uploadTask, fopen('./temp/temp_' . $language . '.html', 'r'), 'temp.html');
+    $cloudconvert->tasks()->upload($uploadTask, fopen('temp/temp_' . $language . '.html', 'r'), 'temp.html');
 
     $cloudconvert->jobs()->wait($job);
 
